@@ -21,18 +21,40 @@ export interface VideoAnalysis {
     };
 }
 
-export const analyzeVideo = async (url: string): Promise<VideoAnalysis> => {
+export const analyzeVideo = async (url: string, language: string = 'en'): Promise<VideoAnalysis> => {
     const response = await fetch(`${API_URL}/analyze`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ url }),
+        body: JSON.stringify({ url, language }),
     });
 
     if (!response.ok) {
         const errorData = await response.json();
         throw new Error(errorData.error || 'Failed to analyze video');
+    }
+
+    return response.json();
+};
+
+export const fetchHistory = async (): Promise<any[]> => {
+    const response = await fetch(`${API_URL}/history`);
+    if (!response.ok) return [];
+    return response.json();
+};
+
+export const translateAnalysis = async (analysis: any, targetLang: string): Promise<any> => {
+    const response = await fetch(`${API_URL}/translate`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ analysis_json: analysis, target_language: targetLang }),
+    });
+
+    if (!response.ok) {
+        throw new Error('Translation failed');
     }
 
     return response.json();

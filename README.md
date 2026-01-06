@@ -6,7 +6,7 @@ A high-performance, containerized microservices web application that analyzes Yo
 - **Premium UI**: Modern, responsive interface with Glassmorphism design.
 - **Microservices Architecture**: Separate Frontend (Next.js 15) and Backend (Express).
 - **Dockerized**: Easy deployment with Docker Compose.
-- **AI-Powered**: Uses Gemini 2.0 Flash Preview for lightning-fast analysis.
+- **AI-Powered**: Uses Gemini 3.0 Flash Preview for lightning-fast analysis.
 - **Deep Insights**:
     - Video Statistics (Views, Likes, Comments).
     - Sentiment Analysis (Positive/Negative/Neutral).

@@ -1,7 +1,7 @@
 import { VideoAnalysis } from '@/services/api';
 import StatsCard from './StatsCard';
 import InsightCard from './InsightCard';
-import { Eye, ThumbsUp, MessageSquare, TrendingUp, Smile, AlertTriangle, Lightbulb, Download, Loader2 } from 'lucide-react';
+import { Eye, ThumbsUp, MessageSquare, TrendingUp, Smile, AlertTriangle, Lightbulb, Download, Loader2, Globe } from 'lucide-react';
 import { jsPDF } from 'jspdf';
 import html2canvas from 'html2canvas';
 import { motion } from 'framer-motion';
@@ -10,9 +10,11 @@ import styles from './AnalysisDashboard.module.css';
 
 interface DashboardProps {
     data: VideoAnalysis;
+    onTranslate?: (lang: string) => void;
+    currentLang?: 'en' | 'ar';
 }
 
-export default function AnalysisDashboard({ data }: DashboardProps) {
+export default function AnalysisDashboard({ data, onTranslate, currentLang = 'en' }: DashboardProps) {
     const { videoDetails, analysis } = data;
     const [downloading, setDownloading] = useState(false);
     const reportRef = useRef<HTMLDivElement>(null);
@@ -22,11 +24,10 @@ export default function AnalysisDashboard({ data }: DashboardProps) {
         setDownloading(true);
 
         try {
-            // Use html2canvas to capture the DOM element, ensuring Arabic/UTF-8 support
             const canvas = await html2canvas(reportRef.current, {
-                scale: 2, // Higher resolution
-                useCORS: true, // Handle cross-origin images like YouTube thumbnails
-                backgroundColor: '#0f172a', // Dark background
+                scale: 2,
+                useCORS: true,
+                backgroundColor: '#0f172a',
                 logging: false
             });
 
@@ -47,6 +48,12 @@ export default function AnalysisDashboard({ data }: DashboardProps) {
         }
     };
 
+    const toggleLang = () => {
+        if (onTranslate) {
+            onTranslate(currentLang === 'en' ? 'ar' : 'en');
+        }
+    };
+
     return (
         <div className={styles.dashboard}>
             {/* Report Container for PDF Capture */}
@@ -59,7 +66,7 @@ export default function AnalysisDashboard({ data }: DashboardProps) {
                         src={videoDetails.thumbnail}
                         alt="Thumbnail"
                         className={styles.thumbnail}
-                        crossOrigin="anonymous" // Important for html2canvas
+                        crossOrigin="anonymous"
                     />
                     <div className={styles.videoInfo}>
                         <h2 className={styles.videoTitle}>{videoDetails.title}</h2>
@@ -93,15 +100,27 @@ export default function AnalysisDashboard({ data }: DashboardProps) {
                 <section>
                     <div className={styles.sectionHeader}>
                         <h3 className={styles.sectionTitle}>Deep Analysis</h3>
-                        <button
-                            onClick={handleDownload}
-                            disabled={downloading}
-                            className={styles.downloadButton}
-                            style={downloading ? { opacity: 0.7, cursor: 'not-allowed' } : {}}
-                        >
-                            {downloading ? <Loader2 className={styles.loadingIcon} size={16} /> : <Download size={16} />}
-                            {downloading ? 'Generating...' : 'Download Report'}
-                        </button>
+                        <div style={{ display: 'flex', gap: '0.5rem' }}>
+                            {onTranslate && (
+                                <button
+                                    onClick={toggleLang}
+                                    className={styles.downloadButton}
+                                    style={{ borderColor: '#3b82f6', color: '#60a5fa' }}
+                                >
+                                    <Globe size={16} />
+                                    {currentLang === 'en' ? 'Translate to Arabic' : 'Translate to English'}
+                                </button>
+                            )}
+                            <button
+                                onClick={handleDownload}
+                                disabled={downloading}
+                                className={styles.downloadButton}
+                                style={downloading ? { opacity: 0.7, cursor: 'not-allowed' } : {}}
+                            >
+                                {downloading ? <Loader2 className={styles.loadingIcon} size={16} /> : <Download size={16} />}
+                                {downloading ? 'Generating...' : 'Download Report'}
+                            </button>
+                        </div>
                     </div>
 
                     <motion.div
