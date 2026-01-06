@@ -1,25 +1,53 @@
-# YouTube Video Analysis App
+# YouTube Video Analysis & Insights
+> Unlocking the hidden value in YouTube comments with AI.
 
-A high-performance, containerized microservices web application that analyzes YouTube videos using **Google Gemini Flash AI**. It provides premium insights, sentiment analysis, and common themes from comments.
+**YouTube Video Analysis** is a powerful web application that transforms raw YouTube comments into actionable insights using **Google Gemini 3.0 Flash**. It provides content creators and marketers with instant sentiment analysis, common themes, and audience feedback, all wrapped in a premium, modern interface.
 
-## 🚀 Features
-- **Premium UI**: Modern, responsive interface with Glassmorphism design.
-- **Microservices Architecture**: Separate Frontend (Next.js 15) and Backend (Express).
-- **Dockerized**: Easy deployment with Docker Compose.
-- **AI-Powered**: Uses Gemini 3.0 Flash Preview for lightning-fast analysis.
-- **Deep Insights**:
-    - Video Statistics (Views, Likes, Comments).
-    - Sentiment Analysis (Positive/Negative/Neutral).
-    - Key Themes & Takeaways.
-    - "Happy Points" & Valid Criticism.
-- **Exportable Reports**: Download comprehensive analysis as PDF.
+## 🚀 Project Scope & Summary
+The goal of this project is to provide a seamless, "one-click" analysis tool. Users simply paste a YouTube URL, and the system handles the rest: fetching metadata, scraping comments, and running advanced LLM prompts to distill thousands of words into a clear, visual report.
 
-## 🛠️ Tech Stack
-- **Frontend**: Next.js 15, TypeScript, Vanilla CSS (Modules).
-- **Backend**: Node.js, Express, TypeScript.
-- **AI**: Google Gemini (via `@google/generative-ai` SDK).
-- **Data**: YouTube Data API v3.
-- **Ops**: Docker, Docker Compose.
+### Key Features
+- **📊 Deep Analytics**: View counts, likes, and comment volume at a glance.
+- **🧠 AI Sentiment Analysis**: Detects overall audience mood (Positive/Neutral/Negative) with a visual score.
+- **💡 Smart Insights**:
+    - **Key Takeaways**: The "tl;dr" of the comment section.
+    - **Common Themes**: What everyone is talking about.
+    - **Issues & Problems**: Bug reports and complaints.
+    - **What People Love**: Positive highlights.
+- **🌍 Multi-Language Support**:
+    - **UI Localization**: Switch between English (LTR) and Arabic (RTL).
+    - **AI Translation**: Instantly translate analysis results between English and Arabic.
+- **💾 History & Persistence**: Automatically saves every analysis to a robust PostgreSQL database.
+- **📄 Exportable Reports**: Download professional PDF reports of your analysis.
+
+## 🏗 Architecture
+The project follows a **Dockerized Microservices** architecture for scalability and isolation.
+
+```mermaid
+graph TD
+    User[User / Browser]
+    User -->|HTTP Requests| NextJS[Client (Next.js 15)]
+    NextJS -->|API Calls| FastAPI[Server (Python FastAPI)]
+    
+    subgraph Services
+        FastAPI -->|Store/Retrieve| Postgres[(PostgreSQL DB)]
+        FastAPI -->|Fetch Data| YouTubeAPI[YouTube Data API]
+        FastAPI -->|Analyze/Translate| Gemini[Gemini 3.0 Flash]
+    end
+```
+
+## 🔮 Future Updates
+- **Topic Clustering**: visualizing comment clusters.
+- **Competitor Analysis**: Compare two videos side-by-side.
+- **User Accounts**: Personalized dashboards and saved collections.
+- **Export to CSV/Excel**: For raw data analysis.
+
+## 🛠 Tech Stack
+- **Frontend**: Next.js 15, React, CSS Modules (Glassmorphism UI), Framer Motion.
+- **Backend**: Python 3.9, FastAPI, SQLAlchemy, Pydantic.
+- **Database**: PostgreSQL 15.
+- **AI/ML**: Google Gemini 3.0 Flash Preview.
+- **DevOps**: Docker, Docker Compose.
 
 ---
 
