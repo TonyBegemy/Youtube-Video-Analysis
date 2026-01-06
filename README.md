@@ -25,14 +25,14 @@ The project follows a **Dockerized Microservices** architecture for scalability 
 
 ```mermaid
 graph TD
-    User[User / Browser]
-    User -->|HTTP Requests| NextJS[Client (Next.js 15)]
-    NextJS -->|API Calls| FastAPI[Server (Python FastAPI)]
+    User["User / Browser"]
+    User -->|HTTP Requests| NextJS["Client (Next.js 15)"]
+    NextJS -->|API Calls| FastAPI["Server (Python FastAPI)"]
     
     subgraph Services
-        FastAPI -->|Store/Retrieve| Postgres[(PostgreSQL DB)]
-        FastAPI -->|Fetch Data| YouTubeAPI[YouTube Data API]
-        FastAPI -->|Analyze/Translate| Gemini[Gemini 3.0 Flash]
+        FastAPI -->|Store/Retrieve| Postgres[("PostgreSQL DB")]
+        FastAPI -->|Fetch Data| YouTubeAPI["YouTube Data API"]
+        FastAPI -->|Analyze/Translate| Gemini["Gemini 3.0 Flash"]
     end
 ```
 
