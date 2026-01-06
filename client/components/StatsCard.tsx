@@ -1,5 +1,6 @@
 import { ReactNode } from 'react';
 import { motion } from 'framer-motion';
+import styles from './StatsCard.module.css';
 
 interface StatsCardProps {
     label: string;
@@ -14,14 +15,14 @@ export default function StatsCard({ label, value, icon, delay = 0 }: StatsCardPr
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.4, delay }}
-            className="glass-card flex items-center gap-4"
+            className={styles.card}
         >
-            <div className="p-3 bg-blue-500/10 rounded-lg text-blue-400">
+            <div className={styles.iconWrapper}>
                 {icon}
             </div>
             <div>
-                <p className="text-gray-400 text-sm font-medium">{label}</p>
-                <h3 className="text-2xl font-bold text-white">{value}</h3>
+                <p className={styles.label}>{label}</p>
+                <h3 className={styles.value}>{value}</h3>
             </div>
         </motion.div>
     );

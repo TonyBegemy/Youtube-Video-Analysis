@@ -67,7 +67,7 @@ You need two API keys to run this application.
    docker-compose up --build
    ```
    - Frontend will be at: `http://localhost:3000`
-   - Backend will be at: `http://localhost:5000`
+   - Backend will be at: `http://localhost:5001`
 
 ---
 

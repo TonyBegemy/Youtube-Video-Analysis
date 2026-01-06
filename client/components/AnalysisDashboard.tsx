@@ -1,9 +1,12 @@
 import { VideoAnalysis } from '@/services/api';
 import StatsCard from './StatsCard';
 import InsightCard from './InsightCard';
-import { Eye, ThumbsUp, MessageSquare, TrendingUp, Smile, AlertTriangle, Lightbulb, Download } from 'lucide-react';
+import { Eye, ThumbsUp, MessageSquare, TrendingUp, Smile, AlertTriangle, Lightbulb, Download, Loader2 } from 'lucide-react';
 import { jsPDF } from 'jspdf';
+import html2canvas from 'html2canvas';
 import { motion } from 'framer-motion';
+import { useState, useRef } from 'react';
+import styles from './AnalysisDashboard.module.css';
 
 interface DashboardProps {
     data: VideoAnalysis;
@@ -11,58 +14,57 @@ interface DashboardProps {
 
 export default function AnalysisDashboard({ data }: DashboardProps) {
     const { videoDetails, analysis } = data;
+    const [downloading, setDownloading] = useState(false);
+    const reportRef = useRef<HTMLDivElement>(null);
 
-    const handleDownload = () => {
-        const doc = new jsPDF();
+    const handleDownload = async () => {
+        if (!reportRef.current) return;
+        setDownloading(true);
 
-        doc.setFontSize(20);
-        doc.text('YouTube Video Analysis Report', 20, 20);
+        try {
+            // Use html2canvas to capture the DOM element, ensuring Arabic/UTF-8 support
+            const canvas = await html2canvas(reportRef.current, {
+                scale: 2, // Higher resolution
+                useCORS: true, // Handle cross-origin images like YouTube thumbnails
+                backgroundColor: '#0f172a', // Dark background
+                logging: false
+            });
 
-        doc.setFontSize(12);
-        doc.text(`Video: ${videoDetails.title.substring(0, 50)}...`, 20, 35);
-        doc.text(`Channel: ${videoDetails.channelTitle}`, 20, 42);
+            const imgData = canvas.toDataURL('image/png');
+            const pdf = new jsPDF({
+                orientation: 'portrait',
+                unit: 'px',
+                format: [canvas.width, canvas.height]
+            });
 
-        doc.text(`Sentiment Score: ${analysis.sentiment_score}`, 20, 55);
-        doc.text(`Summary: ${analysis.sentiment_summary}`, 20, 62, { maxWidth: 170 });
-
-        let y = 80;
-        doc.setFontSize(16);
-        doc.text('Key Takeaways:', 20, y);
-        y += 10;
-        doc.setFontSize(12);
-        analysis.key_takeaways.forEach(point => {
-            doc.text(`- ${point}`, 20, y, { maxWidth: 170 });
-            y += 10;
-        });
-
-        y += 10;
-        doc.setFontSize(16);
-        doc.text('Common Themes:', 20, y);
-        y += 10;
-        doc.setFontSize(12);
-        analysis.common_themes.forEach(point => {
-            doc.text(`- ${point}`, 20, y, { maxWidth: 170 });
-            y += 10;
-        });
-
-        doc.save('video-analysis-report.pdf');
+            pdf.addImage(imgData, 'PNG', 0, 0, canvas.width, canvas.height);
+            pdf.save('youtube-analysis-report.pdf');
+        } catch (error) {
+            console.error('PDF Generation failed:', error);
+            alert('Failed to generate PDF report.');
+        } finally {
+            setDownloading(false);
+        }
     };
 
     return (
-        <div className="space-y-8 animate-fade-in pb-10">
-            {/* Video Header */}
-            <div className="flex flex-col md:flex-row gap-6 items-start">
-                <img
-                    src={videoDetails.thumbnail}
-                    alt="Thumbnail"
-                    className="w-full md:w-64 rounded-xl shadow-lg"
-                />
-                <div className="flex-1">
-                    <h2 className="text-2xl font-bold mb-2">{videoDetails.title}</h2>
-                    <p className="text-gray-400 mb-4">{videoDetails.channelTitle}</p>
-                    <div className="flex flex-wrap gap-2">
-                        {/* Stats Row */}
-                        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 w-full">
+        <div className={styles.dashboard}>
+            {/* Report Container for PDF Capture */}
+            <div ref={reportRef} style={{ padding: '20px', backgroundColor: '#0f172a' }}>
+
+                {/* Video Header */}
+                <div className={styles.videoSection}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                        src={videoDetails.thumbnail}
+                        alt="Thumbnail"
+                        className={styles.thumbnail}
+                        crossOrigin="anonymous" // Important for html2canvas
+                    />
+                    <div className={styles.videoInfo}>
+                        <h2 className={styles.videoTitle}>{videoDetails.title}</h2>
+                        <p className={styles.channelTitle}>{videoDetails.channelTitle}</p>
+                        <div className={styles.statsGrid}>
                             <StatsCard
                                 label="Views"
                                 value={parseInt(videoDetails.viewCount).toLocaleString()}
@@ -84,80 +86,86 @@ export default function AnalysisDashboard({ data }: DashboardProps) {
                         </div>
                     </div>
                 </div>
-            </div>
 
-            <div className="h-px bg-gray-700/50" />
+                <div className={styles.divider} />
 
-            {/* Sentiment Section */}
-            <section>
-                <div className="flex justify-between items-center mb-6">
-                    <h3 className="text-2xl font-bold">Deep Analysis</h3>
-                    <button
-                        onClick={handleDownload}
-                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-gray-800 hover:bg-gray-700 transition border border-gray-700 text-sm font-medium"
+                {/* Sentiment Section */}
+                <section>
+                    <div className={styles.sectionHeader}>
+                        <h3 className={styles.sectionTitle}>Deep Analysis</h3>
+                        <button
+                            onClick={handleDownload}
+                            disabled={downloading}
+                            className={styles.downloadButton}
+                            style={downloading ? { opacity: 0.7, cursor: 'not-allowed' } : {}}
+                        >
+                            {downloading ? <Loader2 className={styles.loadingIcon} size={16} /> : <Download size={16} />}
+                            {downloading ? 'Generating...' : 'Download Report'}
+                        </button>
+                    </div>
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        className={styles.sentimentCard}
                     >
-                        <Download size={16} />
-                        Download Report
-                    </button>
-                </div>
-
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    className="glass-card mb-8 border-l-4 border-l-blue-500"
-                >
-                    <div className="flex items-center gap-3 mb-2">
-                        <TrendingUp className="text-blue-500" />
-                        <h4 className="font-bold text-lg">Sentiment Summary</h4>
-                    </div>
-                    <p className="text-gray-300 leading-relaxed text-lg">
-                        {analysis.sentiment_summary}
-                    </p>
-                    <div className="mt-4 flex items-center gap-4">
-                        <div className="bg-gray-800 h-2 rounded-full flex-1 overflow-hidden">
-                            <motion.div
-                                initial={{ width: 0 }}
-                                whileInView={{ width: `${((analysis.sentiment_score + 1) / 2) * 100}%` }}
-                                transition={{ duration: 1, delay: 0.5 }}
-                                className={`h-full ${analysis.sentiment_score > 0 ? 'bg-green-500' : 'bg-red-500'}`}
-                            />
+                        <div className={styles.sentimentHeader}>
+                            <TrendingUp />
+                            <h4 className={styles.sentimentTitle}>Sentiment Summary</h4>
                         </div>
-                        <span className="font-mono font-bold">{analysis.sentiment_score > 0 ? '+' : ''}{analysis.sentiment_score}</span>
-                    </div>
-                </motion.div>
+                        <p className={styles.summaryText}>
+                            {analysis.sentiment_summary}
+                        </p>
+                        <div className={styles.scoreContainer}>
+                            <div className={styles.barBackground}>
+                                <motion.div
+                                    initial={{ width: 0 }}
+                                    whileInView={{ width: `${((analysis.sentiment_score + 1) / 2) * 100}%` }}
+                                    transition={{ duration: 1, delay: 0.5 }}
+                                    className={`${styles.barFill} ${analysis.sentiment_score > 0 ? styles.barPositive : styles.barNegative}`}
+                                />
+                            </div>
+                            <span className={styles.scoreValue}>{analysis.sentiment_score > 0 ? '+' : ''}{analysis.sentiment_score}</span>
+                        </div>
+                    </motion.div>
 
-                <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <InsightCard
-                        title="Key Takeaways"
-                        items={analysis.key_takeaways}
-                        icon={<Lightbulb />}
-                        colorClass="text-yellow-400"
-                        delay={0.2}
-                    />
-                    <InsightCard
-                        title="Common Themes"
-                        items={analysis.common_themes}
-                        icon={<MessageSquare />}
-                        colorClass="text-blue-400"
-                        delay={0.3}
-                    />
-                    <InsightCard
-                        title="Issues & Problems"
-                        items={analysis.issues_and_problems}
-                        icon={<AlertTriangle />}
-                        colorClass="text-red-400"
-                        delay={0.4}
-                    />
-                    <InsightCard
-                        title="What People Love"
-                        items={analysis.happy_points}
-                        icon={<Smile />}
-                        colorClass="text-green-400"
-                        delay={0.5}
-                    />
-                </div>
-            </section>
+                    <div className={styles.insightsGrid}>
+                        <InsightCard
+                            title="Key Takeaways"
+                            description="High-level summary of the most important points discussed."
+                            items={analysis.key_takeaways}
+                            icon={<Lightbulb />}
+                            colorClass="text-yellow-400"
+                            delay={0.2}
+                        />
+                        <InsightCard
+                            title="Common Themes"
+                            description="Recurring topics and threads found across multiple comments."
+                            items={analysis.common_themes}
+                            icon={<MessageSquare />}
+                            colorClass="text-blue-400"
+                            delay={0.3}
+                        />
+                        <InsightCard
+                            title="Issues & Problems"
+                            description="Complaints, bugs, or constructive criticism from viewers."
+                            items={analysis.issues_and_problems}
+                            icon={<AlertTriangle />}
+                            colorClass="text-red-400"
+                            delay={0.4}
+                        />
+                        <InsightCard
+                            title="What People Love"
+                            description="Positive highlights and aspects viewers appreciated most."
+                            items={analysis.happy_points}
+                            icon={<Smile />}
+                            colorClass="text-green-400"
+                            delay={0.5}
+                        />
+                    </div>
+                </section>
+            </div>
         </div>
     );
 }

@@ -1,30 +1,42 @@
 import { motion } from 'framer-motion';
 import { ReactNode } from 'react';
+import styles from './InsightCard.module.css';
 
 interface InsightCardProps {
     title: string;
+    description: string;
     items: string[];
     icon: ReactNode;
-    colorClass: string; // e.g., 'text-green-400'
+    colorClass: string; // expects specific map keys now
     delay?: number;
 }
 
-export default function InsightCard({ title, items, icon, colorClass, delay = 0 }: InsightCardProps) {
+const colorMap: Record<string, string> = {
+    'text-blue-400': styles.colorBlue,
+    'text-green-400': styles.colorGreen,
+    'text-red-400': styles.colorRed,
+    'text-yellow-400': styles.colorYellow,
+};
+
+export default function InsightCard({ title, description, items, icon, colorClass, delay = 0 }: InsightCardProps) {
+    const activeColor = colorMap[colorClass] || styles.colorBlue;
+
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5, delay }}
-            className="glass-card flex flex-col h-full"
+            className={styles.card}
         >
-            <div className={`flex items-center gap-2 mb-4 ${colorClass}`}>
+            <div className={`${styles.header} ${activeColor}`}>
                 {icon}
-                <h3 className="text-lg font-bold">{title}</h3>
+                <h3 className={styles.title}>{title}</h3>
             </div>
-            <ul className="space-y-3">
+            <p className={styles.description}>{description}</p>
+            <ul className={styles.list}>
                 {items.map((item, i) => (
-                    <li key={i} className="flex gap-3 text-gray-300 text-sm leading-relaxed">
-                        <span className={`mt-1.5 w-1.5 h-1.5 rounded-full flex-shrink-0 bg-current opacity-70 ${colorClass}`} />
+                    <li key={i} className={styles.listItem}>
+                        <span className={`${styles.dot} ${activeColor}`} />
                         {item}
                     </li>
                 ))}

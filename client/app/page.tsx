@@ -17,12 +17,12 @@ export default function Home() {
       const data = await analyzeVideo(url);
       setAnalysisData(data);
       toast.success('Analysis complete!');
-      // Scroll to results
       setTimeout(() => {
         const results = document.getElementById('results');
         results?.scrollIntoView({ behavior: 'smooth' });
       }, 100);
     } catch (error: any) {
+      console.error(error);
       toast.error(error.message || 'Something went wrong');
     } finally {
       setLoading(false);
@@ -30,7 +30,7 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen relative pb-20">
+    <main style={{ minHeight: '100vh', position: 'relative', paddingBottom: '5rem' }}>
       <Toaster position="bottom-right" toastOptions={{
         style: {
           background: '#1e293b',

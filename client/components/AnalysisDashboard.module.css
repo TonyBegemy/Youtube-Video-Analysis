@@ -1,0 +1,186 @@
+.dashboard {
+    padding-bottom: 2.5rem;
+    animation: fadeIn 0.5s ease-out forwards;
+}
+
+.videoSection {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    align-items: flex-start;
+}
+
+@media (min-width: 768px) {
+    .videoSection {
+        flex-direction: row;
+    }
+}
+
+.thumbnail {
+    width: 100%;
+    border-radius: 0.75rem;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+@media (min-width: 768px) {
+    .thumbnail {
+        width: 16rem;
+        /* w-64 */
+    }
+}
+
+.videoInfo {
+    flex: 1;
+}
+
+.videoTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.channelTitle {
+    color: #9ca3af;
+    margin-bottom: 1rem;
+}
+
+.statsGrid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1rem;
+    width: 100%;
+}
+
+@media (min-width: 768px) {
+    .statsGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+.divider {
+    height: 1px;
+    background-color: rgba(55, 65, 81, 0.5);
+    margin: 2rem 0;
+}
+
+.sectionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.sectionTitle {
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+.downloadButton {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    background-color: #1f2937;
+    color: white;
+    border: 1px solid #374151;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.downloadButton:hover {
+    background-color: #374151;
+}
+
+.sentimentCard {
+    background: rgba(30, 41, 59, 0.7);
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 1rem;
+    padding: 1.5rem;
+    border-left: 4px solid #3b82f6;
+    margin-bottom: 2rem;
+}
+
+.sentimentHeader {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 0.5rem;
+    color: #3b82f6;
+}
+
+.sentimentTitle {
+    font-weight: 700;
+    font-size: 1.125rem;
+    color: white;
+}
+
+.summaryText {
+    color: #d1d5db;
+    line-height: 1.625;
+    font-size: 1.125rem;
+}
+
+.scoreContainer {
+    margin-top: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.barBackground {
+    background-color: #1f2937;
+    height: 0.5rem;
+    border-radius: 9999px;
+    flex: 1;
+    overflow: hidden;
+}
+
+.barFill {
+    height: 100%;
+}
+
+.barPositive {
+    background-color: #22c55e;
+}
+
+.barNegative {
+    background-color: #ef4444;
+}
+
+.scoreValue {
+    font-family: monospace;
+    font-weight: 700;
+}
+
+.insightsGrid {
+    display: grid;
+    gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+    .insightsGrid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (min-width: 1024px) {
+    .insightsGrid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
